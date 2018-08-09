@@ -24,6 +24,10 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { environment } from '../environments/environment';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
+// RXJS.
+import { StoreModule } from '@ngrx/store';
+import { appReducer } from './app.reducer';
+
 // components.
 import { AppComponent } from './app.component';
 import { SignupComponent } from './auth/signup/signup.component';
@@ -60,7 +64,8 @@ import { StopTrainingComponent } from './training/stop-training.component';
     FlexLayoutModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    StoreModule.forRoot({ ui: appReducer })
   ],
   providers: [AuthService, TrainingService, UIService],
   bootstrap: [AppComponent],
