@@ -4,7 +4,7 @@ import { NgForm } from '@angular/forms';
 import { UIService } from '../../shared/ui.service';
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import * as fromApp from '../../app.reducer';
+import * as fromRoot from '../../app.reducer';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -17,12 +17,12 @@ export class LoginComponent implements OnInit {
   // create a property to store the state of the spinner.
   isLoading$: Observable<boolean>;
 
-  constructor(private authService: AuthService, private uiService: UIService, private store: Store<{ ui: fromApp.State }>) { }
+  constructor(private authService: AuthService, private uiService: UIService, private store: Store<fromRoot.State>) { }
 
   ngOnInit() {
     // get the isLoading state from the store.
     // assign it to the isLoading$ property
-    this.isLoading$ = this.store.pipe(map(state => state.ui.isLoading));
+    this.isLoading$ = this.store.select(fromRoot.getIsLoading);
   }
 
   // method called when the form is submitted.

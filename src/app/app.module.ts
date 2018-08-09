@@ -26,7 +26,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 
 // RXJS.
 import { StoreModule } from '@ngrx/store';
-import { appReducer } from './app.reducer';
+import { reducers } from './app.reducer';
 
 // components.
 import { AppComponent } from './app.component';
@@ -65,7 +65,7 @@ import { StopTrainingComponent } from './training/stop-training.component';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    StoreModule.forRoot({ ui: appReducer })
+    StoreModule.forRoot(reducers)
   ],
   providers: [AuthService, TrainingService, UIService],
   bootstrap: [AppComponent],
