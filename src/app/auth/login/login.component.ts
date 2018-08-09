@@ -3,26 +3,26 @@ import { AuthService } from '../auth.service';
 import { NgForm } from '@angular/forms';
 import { UIService } from '../../shared/ui.service';
 import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../app.reducer';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnInit {
   // create a property to store the state of the spinner.
-  isLoading: boolean = false;
-  // property to store the loading subscription.
-  private loadingSub: Subscription;
+  isLoading$: Observable<boolean>;
 
-  constructor(private authService: AuthService, private uiService: UIService) { }
+  constructor(private authService: AuthService, private uiService: UIService, private store: Store<{ ui: fromApp.State }>) { }
 
   ngOnInit() {
-    // subscribe to the subject.
-    this.loadingSub = this.uiService.loadingStateChanged.subscribe((isLoadingState) => {
-      // assign the value to the property.
-      this.isLoading = isLoadingState;
-    });
+    // get the isLoading state from the store.
+    // assign it to the isLoading$ property
+    this.isLoading$ = this.store.pipe(map(state => state.ui.isLoading));
   }
 
   // method called when the form is submitted.
@@ -32,11 +32,5 @@ export class LoginComponent implements OnInit, OnDestroy {
       email: form.value.email,
       password: form.value.password
     });
-  }
-
-  // this method will be called when the component is no longer in use.
-  ngOnDestroy() {
-    // unsubscribe
-    this.loadingSub.unsubscribe();
   }
 }

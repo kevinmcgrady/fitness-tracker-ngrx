@@ -1,5 +1,5 @@
 // interface defining the state.
-interface State {
+export interface State {
   isLoading: boolean;
 }
 
