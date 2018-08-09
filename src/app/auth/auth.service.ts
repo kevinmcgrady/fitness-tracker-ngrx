@@ -10,12 +10,11 @@ import { UIService } from '../shared/ui.service';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../app.reducer';
 import * as UI from '../shared/ui.actions';
+import * as Auth from './auth.actions';
+
+
 @Injectable()
 export class AuthService {
-  // property to store if the user is logged in.
-  private isAuthenticated: boolean = false;
-  // a subject to store if the user is logged in or not.
-  authChange = new Subject<boolean>();
 
   constructor(private router: Router, private afAuth: AngularFireAuth, private trainingService: TrainingService, private snackbar: MatSnackBar, private uiService: UIService, private store: Store<fromRoot.State>) { }
 
@@ -25,18 +24,14 @@ export class AuthService {
       // if a user exists.
       if(user) {
         // set isAuthenticated to true.
-        this.isAuthenticated = true;
-        // send true to the subject.
-        this.authChange.next(true);
+        this.store.dispatch(new Auth.SetAuthenticated());
         // navigate the user to the training page.
         this.router.navigate(['/training']);
       } else {
         // cancel the database subs.
         this.trainingService.cancelSubscriptions();
-        // send false to the subject.
-        this.authChange.next(false);
         // set isAuthenticated to false.
-        this.isAuthenticated = false;
+        this.store.dispatch(new Auth.SetUnauthenticated());
         // navigate the user to the training page.
         this.router.navigate(['/login']);
       }
@@ -79,9 +74,4 @@ export class AuthService {
     this.afAuth.auth.signOut();
   }
 
-  // method to check if the user is logged in.
-  isAuth() {
-    // return the isAuthenticated (true or false).
-    return this.isAuthenticated;
-  }
 }
