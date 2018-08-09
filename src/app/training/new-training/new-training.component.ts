@@ -5,7 +5,9 @@ import { NgForm } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { UIService } from '../../shared/ui.service';
-
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../app.reducer';
 
 @Component({
   selector: 'app-new-training',
@@ -18,18 +20,15 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
   // property to store the subscription.
   exercisesSub: Subscription;
   // store the loading state of the spinner.
-  isLoading: boolean = true;
+  isLoading$: Observable<boolean>;
   // store the subscription.
   isLoadingSub: Subscription;
 
-  constructor(private trainingService: TrainingService, private uiService: UIService) { }
+  constructor(private trainingService: TrainingService, private uiService: UIService, private store: Store<fromRoot.State>) { }
 
   ngOnInit() {
-    // subscribe to the loading state.
-    this.isLoadingSub = this.uiService.loadingStateChanged.subscribe((isLoadingState) => {
-      // set the property to the value.
-      this.isLoading = isLoadingState;
-    });
+    // get the isloadin state from the root reducer and assign it to the isLoading$ property.
+    this.isLoading$ = this.store.select(fromRoot.getIsLoading);
 
     // set the results from the database to the exercises property.
     this.exercisesSub = this.trainingService.exercisesChanged.subscribe(exercises => {
