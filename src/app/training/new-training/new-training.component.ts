@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TrainingService } from '../training.service';
 import { Exercise } from '../exercise.model';
 import { NgForm } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { UIService } from '../../shared/ui.service';
 import { Observable } from 'rxjs';

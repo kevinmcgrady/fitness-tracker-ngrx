@@ -5,7 +5,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { UIService } from '../shared/ui.service';
-import * as fromRoot from '../../app.reducer';
+import * as fromRoot from '../app.reducer';
 import { Store } from '@ngrx/store';
 import * as UI from '../shared/ui.actions';
 
