@@ -1,31 +1,29 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { UIService } from '../../shared/ui.service';
 import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../app.reducer';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
-export class SignupComponent implements OnInit, OnDestroy {
+export class SignupComponent implements OnInit {
   // a property to store the max date (over 18).
   maxDate: Date;
   // set a property to store the loading state of the spinner.
-  isLoading: boolean = false;
-  // create a property to store the subscription.
-  isLoadingSub: Subscription;
+  isLoading$: Observable<boolean>;
 
-  constructor(private authService: AuthService, private uiService: UIService) { }
+  constructor(private authService: AuthService, private uiService: UIService, private store: Store<{ ui:fromApp.State }>) { }
 
   ngOnInit() {
-    // subscribe to the subject.
-    this.isLoadingSub = this.uiService.loadingStateChanged.subscribe((isLoadingState) => {
-      // set the property to the result.
-      this.isLoading = isLoadingState;
-    });
-
+    // get the isLoading property from the store and store it in the isLoading$ property.
+    this.isLoading$ = this.store.pipe(map(state => state.ui.isLoading));
     // set the max date to a new date object.
     this.maxDate = new Date();
     // set the full year to the current year - 18.
@@ -39,11 +37,5 @@ export class SignupComponent implements OnInit, OnDestroy {
       email: form.value.email,
       password: form.value.password
     });
-  }
-
-  // method called when component is no longer used.
-  ngOnDestroy() {
-    // unsubscribe.
-    this.isLoadingSub.unsubscribe();
   }
 }
