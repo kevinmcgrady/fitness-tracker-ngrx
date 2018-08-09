@@ -1,0 +1,20 @@
+a {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+a:hover, a:active {
+  color: #eeeeee;
+}
+
+.navigationItems {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-caption {
+  display: inline-block;
+  padding-left: 6px;
+}

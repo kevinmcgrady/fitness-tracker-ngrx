@@ -1,0 +1,48 @@
+p {
+  text-align: center;
+  line-height: 1.5;
+}
+
+div.main-background {
+  height: 90.9vh;
+  background: url('../../assets/images/workout.jpg') center center no-repeat;
+}
+
+div.overlay {
+  height: inherit;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#logo {
+  color: #ffffff;
+  display: block;
+  font-size: 60px;
+  height: auto;
+  width: auto;
+}
+
+div.logo-container {
+  text-align: center;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+div.button-container {
+  display: flex;
+  margin-top: 50px;
+}
+
+div.button-container a:nth-child(1) {
+  margin-right: 10px;
+}
+
+h1 {
+  font-size: 48px;
+  color: #eeeeee;
+}

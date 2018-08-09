@@ -1,0 +1,11 @@
+section.new-training {
+  padding: 30px;
+}
+
+form {
+  width: 90%;
+}
+
+mat-spinner {
+  margin: 0 auto;
+}

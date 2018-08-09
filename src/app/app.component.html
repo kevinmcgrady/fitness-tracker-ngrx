@@ -1,0 +1,13 @@
+<mat-sidenav-container>
+  <mat-sidenav #sidenav role="navigation">
+    <!-- everytime the closeSideNav event is emitted, call the close method on the sidenav local reference -->
+    <app-sidenav-list (closeSideNav)="sidenav.close()"></app-sidenav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <!-- everytime the sideNavToggle event is emitted, call the toggle method on the sidenav local reference -->
+    <app-header (sideNavToggle)="sidenav.toggle()"></app-header>
+    <main>
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
