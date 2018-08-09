@@ -1,28 +1,26 @@
-import { Component, OnInit, EventEmitter, Output, OnDestroy } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../app.reducer';
 
 @Component({
   selector: 'app-sidenav-list',
   templateUrl: './sidenav-list.component.html',
   styleUrls: ['./sidenav-list.component.css']
 })
-export class SidenavListComponent implements OnInit, OnDestroy {
+export class SidenavListComponent implements OnInit {
   // this is a new event emitter to close the side nav when the links are clicked.
   @Output() closeSideNav = new EventEmitter<void>();
   // property to store the auth status.
-  isAuth: boolean;
-  // property to store the subsciption.
-  authSub: Subscription;
+  isAuth$: Observable<boolean>;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private store: Store<fromRoot.State>) { }
 
   ngOnInit() {
-    // subscibe to the authChange subject and store the subscription in the authSub.
-    this.authSub = this.authService.authChange.subscribe((authStatus) => {
-      // set the isAuth to the returned auth status.
-      this.isAuth = authStatus;
-    })
+    // get the auth state from the store and assign it to the isAuth$ property.
+    this.isAuth$ = this.store.select(fromRoot.getIsAuth);
   }
 
   // this method is called when a link is clicked.
@@ -31,11 +29,6 @@ export class SidenavListComponent implements OnInit, OnDestroy {
     this.closeSideNav.emit();
   }
 
-  // this method is called when the component is no longer in use.
-  ngOnDestroy() {
-    // unsubscribe from the subscription.
-    this.authSub.unsubscribe();
-  }
 
   // method to log the user out.
   onLogout() {
