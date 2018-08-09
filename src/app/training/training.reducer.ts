@@ -25,7 +25,7 @@ export function trainingReducer(state = initialState, action: TrainingActions) {
     case SET_FINISHED_TRAININGS:
       return { ...state, finishedExercises: action.payload };
     case START_TRAINING:
-      return { ...state, activeTraining: action.payload };
+      return { ...state, activeTraining: state.availableExercises.find(ex => ex.id === action.payload) };
     case STOP_TRAINING:
       return { ...state, activeTraining: null };
     default:
@@ -37,3 +37,4 @@ export function trainingReducer(state = initialState, action: TrainingActions) {
 export const getAvailableExercises = (state: State) => state.availableExercises;
 export const getFinishedExercises = (state: State) => state.finishedExercises;
 export const getActiveTraining = (state: State) => state.activeTraining;
+export const getIsTraining = (state: State) => state.activeTraining != null;

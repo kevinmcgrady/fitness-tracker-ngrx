@@ -26,3 +26,10 @@ export const getIsLoading = createSelector(getUiState, fromUi.getIsLoading);
 export const getAuthState = createFeatureSelector<fromAuth.State>('auth');
 // method to get the is authenticated property from the auth state.
 export const getIsAuth = createSelector(getAuthState, fromAuth.getIsAuth);
+// method to get the training slice of the app state.
+export const getTrainingState = createFeatureSelector<fromTraining.State>('training');
+// method to get the availableExercises, finishedExercises and the activeTraining.
+export const getAvailableExercises = createSelector(getTrainingState, fromTraining.getAvailableExercises);
+export const getFinishedExercises = createSelector(getTrainingState, fromTraining.getFinishedExercises);
+export const getActiveTraining = createSelector(getTrainingState, fromTraining.getActiveTraining);
+export const getIsTraining = createSelector(getTrainingState, fromTraining.getIsTraining);

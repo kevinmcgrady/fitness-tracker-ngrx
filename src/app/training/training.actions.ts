@@ -25,7 +25,7 @@ export class SetFinishedTrainings implements Action {
 export class StartTraining implements Action {
   readonly type = START_TRAINING;
 
-  constructor(public payload: Exercise) { }
+  constructor(public payload: string) { }
 }
 
 // action classes for the actions, only has a string defined above.

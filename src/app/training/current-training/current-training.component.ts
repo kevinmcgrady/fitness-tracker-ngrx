@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { StopTrainingComponent } from '../stop-training.component';
 import { TrainingService } from '../training.service';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../../app.reducer';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-current-training',
@@ -17,7 +20,7 @@ export class CurrentTrainingComponent implements OnInit {
   message: string = 'Keep Going, You can do it!';
 
   // inject the MatDialog class and the training service.
-  constructor(private dialog: MatDialog, private trainingService: TrainingService) { }
+  constructor(private dialog: MatDialog, private trainingService: TrainingService, private store: Store<fromRoot.State>) { }
 
   ngOnInit() {
     // call the method to start the timer.
@@ -26,19 +29,21 @@ export class CurrentTrainingComponent implements OnInit {
 
   // this method will start or resume the timer.
   startOrResumeTimer() {
-    // get the duration of the current exercise in milliseconds.
-    const step = this.trainingService.getRunningExercise().duration / 100 * 1000;
-    // a timer to increment the progress spinner.
-    this.timer = setInterval(() => {
-      // increment the progress spinner.
-      this.progress = this.progress + 1;
-      // if the number is greater or equal to 100 (%)
-      if(this.progress >= 100) {
-        this.trainingService.completeExercise();
-        // stop the timer.
-        clearInterval(this.timer);
-      }
-    }, step)
+    this.store.select(fromRoot.getActiveTraining).pipe(take(1)).subscribe((ex) => {
+      // get the duration of the current exercise in milliseconds.
+      const step = ex.duration / 100 * 1000;
+      // a timer to increment the progress spinner.
+      this.timer = setInterval(() => {
+        // increment the progress spinner.
+        this.progress = this.progress + 1;
+        // if the number is greater or equal to 100 (%)
+        if(this.progress >= 100) {
+          this.trainingService.completeExercise();
+          // stop the timer.
+          clearInterval(this.timer);
+        }
+      }, step)
+    })
   }
 
   // this method will be called when the stop button is clicked.

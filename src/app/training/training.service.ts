@@ -2,19 +2,18 @@ import { Injectable } from '@angular/core';
 import { Exercise } from './exercise.model';
 import { Subject } from 'rxjs/subject';
 import { AngularFirestore } from 'angularfire2/firestore';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { UIService } from '../shared/ui.service';
 import * as fromRoot from '../app.reducer';
 import { Store } from '@ngrx/store';
 import * as UI from '../shared/ui.actions';
+import * as Training from './training.actions';
 
 @Injectable()
 export class TrainingService {
   // list of exercises.
   private availableExercises: Exercise[] = [];
-  // property to store the running exercise.
-  private runningExercise: Exercise;
   // propety to store a subject when the exercise has changed.
   exerciseChanged = new Subject<Exercise>();
   // a new subject to push the exercises.
@@ -30,7 +29,6 @@ export class TrainingService {
   fetchExercises() {
     // set loading to true.
     this.store.dispatch(new UI.StartLoading());
-
     // return a new array of the availableExercises.
     this.fbSubs.push(this.db.collection<Exercise>('avaliableExercises')
     .snapshotChanges()
@@ -47,11 +45,8 @@ export class TrainingService {
     })).subscribe((exersices: Exercise[]) => {
       // set the loading to false.
       this.store.dispatch(new UI.StopLoading());
-
-      // save the exercises to the property.
-      this.availableExercises = exersices;
-      // push the a copy of the exercises to the subject.
-      this.exercisesChanged.next([...this.availableExercises]);
+      // send the exercises to the store.
+      this.store.dispatch(new Training.SetAvailableTrainings(exersices));
     }, (error) => {
       // set loading to false.
       this.store.dispatch(new UI.StopLoading());
@@ -64,48 +59,37 @@ export class TrainingService {
 
   // method to start the exercise.
   startExercise(selectedId: string) {
-    // find the selected exercise.
-    const selectedExercise = this.availableExercises.find(ex => ex.id === selectedId);
-    // store the exercise.
-    this.runningExercise = selectedExercise;
-    // send a copy of the running exercise to the subject.
-    this.exerciseChanged.next({...this.runningExercise});
+    this.store.dispatch(new Training.StartTraining(selectedId));
   }
 
   // metod called when a exercise is completed.
   completeExercise() {
-    // add the completed exercise to the array.
-    // send a copy of the runningExercise with the aditional properties, date and state.
-    this.addDataToDatabase({...this.runningExercise, date: new Date(), state: 'completed'});
-    // set the runningExercise to null.
-    this.runningExercise = null;
-    // pass null to the subject.
-    this.exerciseChanged.next(null);
+    this.store.select(fromRoot.getActiveTraining).pipe(take(1)).subscribe(ex => {
+      // add the completed exercise to the array.
+      // send a copy of the runningExercise with the aditional properties, date and state.
+      this.addDataToDatabase({...ex, date: new Date(), state: 'completed'});
+      // call the StopTraining action on the store.
+      this.store.dispatch(new Training.StopTraining());
+    })
   }
 
   // this method is called when the exercise is cancelled.
   cancelExercise(progress: number) {
-    // add the completed exercise to the array.
-    // send a copy of the runningExercise with the aditional properties, date and state.
-    this.addDataToDatabase({...this.runningExercise, duration: this.runningExercise.duration * (progress / 100) ,calories: this.runningExercise.calories * (progress / 100), date: new Date(), state: 'cancelled'});
-    // set the runningExercise to null.
-    this.runningExercise = null;
-    // pass null to the subject.
-    this.exerciseChanged.next(null);
-  }
-
-  // method to get the running exercise.
-  getRunningExercise() {
-    // return a copy of the runningExercise
-    return { ...this.runningExercise};
+    this.store.select(fromRoot.getActiveTraining).pipe(take(1)).subscribe(ex => {
+      // add the completed exercise to the array.
+      // send a copy of the runningExercise with the aditional properties, date and state.
+      this.addDataToDatabase({...ex, duration: ex.duration * (progress / 100) ,calories: ex.calories * (progress / 100), date: new Date(), state: 'cancelled'});
+      // call the StopTraining action on the store.
+      this.store.dispatch(new Training.StopTraining());
+    })
   }
 
   // method to get all the past exercises.
   fetchCompletedOrCancelledExercises() {
     // get the finished exercises from the database.
     this.fbSubs.push(this.db.collection('finishedExercises').valueChanges().subscribe((exercises: Exercise[]) => {
-      // pass them to the finishedExercises subject.
-      this.finishedExercisesChanged.next(exercises);
+      // pass the finished exercises to the store.
+      this.store.dispatch(new Training.SetFinishedTrainings(exercises));
     }));
   }
 

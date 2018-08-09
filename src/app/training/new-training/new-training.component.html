@@ -3,10 +3,10 @@
     <mat-card fxFlex="90%">
       <mat-card-title fxLayoutAlign="center">Time to start a workout</mat-card-title>
       <mat-card-content>
-        <mat-form-field fxLayoutAlign="center" *ngIf="!(isLoading$ | async) && exercises">
+        <mat-form-field fxLayoutAlign="center" *ngIf="!(isLoading$ | async) && exercises$ | async">
           <mat-select placeholder="Select a Workout" ngModel name="exercise" required>
             <!-- use the async pipe to auto subscribe to the exercises observable -->
-            <mat-option *ngFor="let exercise of exercises" [value]="exercise.id">
+            <mat-option *ngFor="let exercise of exercises$ | async" [value]="exercise.id">
               {{ exercise.name }}
             </mat-option>
           </mat-select>
@@ -14,8 +14,8 @@
         <mat-spinner *ngIf="isLoading$ | async"></mat-spinner>
       </mat-card-content>
       <mat-card-actions fxLayoutAlign="center" *ngIf="!(isLoading$ | async)">
-        <button type="submit" mat-raised-button color="accent" [disabled]="f.invalid" *ngIf="exercises">Start</button>
-        <button mat-raised-button color="warn" *ngIf="!exercises" type="button" (click)="fetchExercises()">Try Again!</button>
+        <button type="submit" mat-raised-button color="accent" [disabled]="f.invalid" *ngIf="exercises$ | async">Start</button>
+        <button mat-raised-button color="warn" *ngIf="!(exercises$ | async)" type="button" (click)="fetchExercises()">Try Again!</button>
       </mat-card-actions>
     </mat-card>
   </form>

@@ -1,4 +1,4 @@
-<mat-tab-group *ngIf="!ongoingTraining">
+<mat-tab-group *ngIf="!(ongoingTraining$ | async)">
   <mat-tab label="New Exercise">
     <!-- when the event trainingStart is emitted from the new training component, set the ongoingTraining to true -->
     <app-new-training></app-new-training>
@@ -8,4 +8,4 @@
   </mat-tab>
 </mat-tab-group>
 <!-- listens for the trainingExit event, if it is called, set the ongoingTraining to false -->
-<app-current-training *ngIf="ongoingTraining"></app-current-training>
+<app-current-training *ngIf="ongoingTraining$ | async"></app-current-training>

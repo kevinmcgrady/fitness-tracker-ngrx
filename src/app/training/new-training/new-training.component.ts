@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TrainingService } from '../training.service';
 import { Exercise } from '../exercise.model';
 import { NgForm } from '@angular/forms';
@@ -13,15 +13,11 @@ import * as fromRoot from '../../app.reducer';
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.css']
 })
-export class NewTrainingComponent implements OnInit, OnDestroy {
+export class NewTrainingComponent implements OnInit {
   // property to store the exersices.
-  exercises: Exercise[];
-  // property to store the subscription.
-  exercisesSub: Subscription;
+  exercises$: Observable<Exercise[]>;
   // store the loading state of the spinner.
   isLoading$: Observable<boolean>;
-  // store the subscription.
-  isLoadingSub: Subscription;
 
   constructor(private trainingService: TrainingService, private uiService: UIService, private store: Store<fromRoot.State>) { }
 
@@ -30,9 +26,8 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
     this.isLoading$ = this.store.select(fromRoot.getIsLoading);
 
     // set the results from the database to the exercises property.
-    this.exercisesSub = this.trainingService.exercisesChanged.subscribe(exercises => {
-      this.exercises = exercises;
-    });
+    this.exercises$ = this.store.select(fromRoot.getAvailableExercises);
+
     // fetch the exercises from the database.
     this.fetchExercises();
   }
@@ -47,11 +42,5 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
   fetchExercises() {
     // fetch the exercises from the database.
     this.trainingService.fetchExercises();
-  }
-
-  // this method will be called when the component is no longer in use.
-  ngOnDestroy() {
-  // unsubscribe from the subscription.
-  this.exercisesSub.unsubscribe();
   }
 }
